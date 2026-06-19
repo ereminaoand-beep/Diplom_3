@@ -1,20 +1,20 @@
 package tests;
 
 import io.qameta.allure.Description;
+import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.Test;
 import pageobject.LoginPage;
 import pageobject.MainPage;
 import pageobject.RegisterPage;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class RegistrationTest extends BaseTest {
 
-    @Test
-    @DisplayName("Успешная регистрация")
-    @Description("Проверка успешной регистрации с валидными данными")
-    public void successfulRegistrationTest() {
+    @Step("UI-регистрация пользователя с данными: имя={name}, email={email}, пароль={password}")
+    private void registerUserViaUI(String name, String email, String password) {
         MainPage mainPage = new MainPage(driver);
         mainPage.waitForMainPageLoad();
         mainPage.clickLoginButton();
@@ -25,17 +25,28 @@ public class RegistrationTest extends BaseTest {
 
         RegisterPage registerPage = new RegisterPage(driver);
         registerPage.waitForPageLoad();
-        String name = "User" + System.currentTimeMillis();
-        String email = "user" + System.currentTimeMillis() + "@test.com";
-        String password = "123456";
         registerPage.enterName(name);
         registerPage.enterEmail(email);
         registerPage.enterPassword(password);
         registerPage.clickRegisterButton();
+    }
 
+    @Test
+    @DisplayName("Успешная регистрация")
+    @Description("Проверка успешной регистрации с валидными данными")
+    public void successfulRegistrationTest() {
+        String name = "User" + System.currentTimeMillis();
+        String email = "user" + System.currentTimeMillis() + "@test.com";
+        String password = "123456";
 
+        registerUserViaUI(name, email, password);
+
+        LoginPage loginPage = new LoginPage(driver);
         loginPage.waitForPageLoad();
         assertTrue("Не открылась страница входа", driver.getCurrentUrl().contains("login"));
+
+
+        loginUserViaApi(email, password);
     }
 
     @Test
@@ -59,5 +70,6 @@ public class RegistrationTest extends BaseTest {
 
         String error = registerPage.getErrorMessage();
         assertEquals("Некорректное сообщение об ошибке", "Некорректный пароль", error);
+
     }
 }

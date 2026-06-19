@@ -9,7 +9,7 @@ public class WebDriverFactory {
 
     public static WebDriver getDriver(String browser) {
         if (browser.equalsIgnoreCase("chrome")) {
-            WebDriverManager.chromedriver().setup();
+
             return new ChromeDriver();
         } else if (browser.equalsIgnoreCase("yandex")) {
             WebDriverManager.chromedriver().browserVersion("146").setup();

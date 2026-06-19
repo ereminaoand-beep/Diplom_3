@@ -1,6 +1,7 @@
 package tests;
 
 import io.qameta.allure.Description;
+import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -14,25 +15,21 @@ import static org.junit.Assert.assertTrue;
 
 public class LoginTest extends BaseTest {
 
-    private void registerUser(String email, String password, String name) {
-        MainPage mainPage = new MainPage(driver);
-        mainPage.waitForMainPageLoad();
-        mainPage.clickLoginButton();
-
+    @Step("Выполнение входа через UI с email: {email}")
+    private void performUILogin(String email, String password) {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.waitForPageLoad();
-        loginPage.clickRegisterLink();
+        loginPage.enterEmail(email);
+        loginPage.enterPassword(password);
+        loginPage.clickLoginButton();
+    }
 
-        RegisterPage registerPage = new RegisterPage(driver);
-        registerPage.waitForPageLoad();
-        registerPage.enterName(name);
-        registerPage.enterEmail(email);
-        registerPage.enterPassword(password);
-        registerPage.clickRegisterButton();
-        loginPage.waitForPageLoad();
-
-        driver.get("https://stellarburgers.education-services.ru/");
-        mainPage.waitForMainPageLoad();
+    @Step("Проверка успешного входа (появление кнопки 'Оформить заказ')")
+    private void verifySuccessfulLogin() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[text()='Оформить заказ']")));
+        MainPage mainPage = new MainPage(driver);
+        assertTrue("Кнопка оформления заказа не появилась", mainPage.isOrderButtonDisplayed());
     }
 
     @Test
@@ -41,21 +38,14 @@ public class LoginTest extends BaseTest {
     public void loginViaMainButtonTest() {
         String email = "user" + System.currentTimeMillis() + "@test.com";
         String password = "123456";
-        registerUser(email, password, "TestUser");
+        createUserViaApi(email, password, "TestUser");
 
         MainPage mainPage = new MainPage(driver);
         mainPage.waitForMainPageLoad();
         mainPage.clickLoginButton();
 
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.waitForPageLoad();
-        loginPage.enterEmail(email);
-        loginPage.enterPassword(password);
-        loginPage.clickLoginButton();
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[text()='Оформить заказ']")));
-        assertTrue("Кнопка оформления заказа не появилась", mainPage.isOrderButtonDisplayed());
+        performUILogin(email, password);
+        verifySuccessfulLogin();
     }
 
     @Test
@@ -64,21 +54,14 @@ public class LoginTest extends BaseTest {
     public void loginViaPersonalAccountTest() {
         String email = "user" + System.currentTimeMillis() + "@test.com";
         String password = "123456";
-        registerUser(email, password, "TestUser");
+        createUserViaApi(email, password, "TestUser");
 
         MainPage mainPage = new MainPage(driver);
         mainPage.waitForMainPageLoad();
         mainPage.clickPersonalAccount();
 
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.waitForPageLoad();
-        loginPage.enterEmail(email);
-        loginPage.enterPassword(password);
-        loginPage.clickLoginButton();
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[text()='Оформить заказ']")));
-        assertTrue("Кнопка оформления заказа не появилась", mainPage.isOrderButtonDisplayed());
+        performUILogin(email, password);
+        verifySuccessfulLogin();
     }
 
     @Test
@@ -87,7 +70,7 @@ public class LoginTest extends BaseTest {
     public void loginViaRegisterFormTest() {
         String email = "user" + System.currentTimeMillis() + "@test.com";
         String password = "123456";
-        registerUser(email, password, "TestUser");
+        createUserViaApi(email, password, "TestUser");
 
         MainPage mainPage = new MainPage(driver);
         mainPage.waitForMainPageLoad();
@@ -101,14 +84,8 @@ public class LoginTest extends BaseTest {
         registerPage.waitForPageLoad();
         registerPage.clickLoginLink();
 
-        loginPage.waitForPageLoad();
-        loginPage.enterEmail(email);
-        loginPage.enterPassword(password);
-        loginPage.clickLoginButton();
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[text()='Оформить заказ']")));
-        assertTrue("Кнопка оформления заказа не появилась", mainPage.isOrderButtonDisplayed());
+        performUILogin(email, password);
+        verifySuccessfulLogin();
     }
 
     @Test
@@ -117,7 +94,7 @@ public class LoginTest extends BaseTest {
     public void loginViaForgotPasswordFormTest() {
         String email = "user" + System.currentTimeMillis() + "@test.com";
         String password = "123456";
-        registerUser(email, password, "TestUser");
+        createUserViaApi(email, password, "TestUser");
 
         MainPage mainPage = new MainPage(driver);
         mainPage.waitForMainPageLoad();
@@ -131,13 +108,7 @@ public class LoginTest extends BaseTest {
         forgotPage.waitForPageLoad();
         forgotPage.clickLoginLink();
 
-        loginPage.waitForPageLoad();
-        loginPage.enterEmail(email);
-        loginPage.enterPassword(password);
-        loginPage.clickLoginButton();
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[text()='Оформить заказ']")));
-        assertTrue("Кнопка оформления заказа не появилась", mainPage.isOrderButtonDisplayed());
+        performUILogin(email, password);
+        verifySuccessfulLogin();
     }
 }

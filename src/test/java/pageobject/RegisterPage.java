@@ -1,9 +1,11 @@
 package pageobject;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.time.Duration;
 
 public class RegisterPage {
@@ -19,30 +21,37 @@ public class RegisterPage {
         this.driver = driver;
     }
 
+    @Step("Ввод имени: {name}")
     public void enterName(String name) {
         driver.findElement(nameField).sendKeys(name);
     }
 
+    @Step("Ввод email: {email}")
     public void enterEmail(String email) {
         driver.findElement(emailField).sendKeys(email);
     }
 
+    @Step("Ввод пароля")
     public void enterPassword(String password) {
         driver.findElement(passwordField).sendKeys(password);
     }
 
+    @Step("Клик по кнопке «Зарегистрироваться»")
     public void clickRegisterButton() {
         driver.findElement(registerButton).click();
     }
 
+    @Step("Клик по ссылке «Войти»")
     public void clickLoginLink() {
         driver.findElement(loginLink).click();
     }
 
+    @Step("Получение текста сообщения об ошибке")
     public String getErrorMessage() {
         return driver.findElement(errorMessage).getText();
     }
 
+    @Step("Ожидание загрузки страницы регистрации")
     public void waitForPageLoad() {
         new WebDriverWait(driver, Duration.ofSeconds(10))
                 .until(ExpectedConditions.visibilityOfElementLocated(registerButton));
