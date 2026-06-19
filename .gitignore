@@ -1,0 +1,16 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Maven build
+target/
+*.log
+
+# Allure
+.allure/
+!target/allure-results/
+!target/allure-results/**
+
+# Mac / Windows system files
+.DS_Store
+Thumbs.db
