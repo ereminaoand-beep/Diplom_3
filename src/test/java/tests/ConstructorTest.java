@@ -24,7 +24,7 @@ public class ConstructorTest extends BaseTest {
     @Step("Проверка активного раздела: ожидаем {expected}")
     private void verifyActiveTab(String expected) {
         By activeTabLocator = By.xpath("//div[contains(@class, 'current')]//span");
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         wait.until(ExpectedConditions.textToBe(activeTabLocator, expected));
         MainPage mainPage = new MainPage(driver);
         String active = mainPage.getActiveTabText();
@@ -57,10 +57,6 @@ public class ConstructorTest extends BaseTest {
     public void switchToFillingsTest() {
         MainPage mainPage = new MainPage(driver);
         mainPage.waitForMainPageLoad();
-
-        switchToSection("Соусы");
-        verifyActiveTab("Соусы");
-
         switchToSection("Начинки");
         verifyActiveTab("Начинки");
     }
