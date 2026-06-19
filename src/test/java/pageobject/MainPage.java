@@ -68,4 +68,9 @@ public class MainPage {
             return false;
         }
     }
+    @Step("Ожидание появления кнопки «Оформить заказ»")
+    public void waitForOrderButton() {
+        new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[text()='Оформить заказ']")));
+    }
 }

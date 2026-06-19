@@ -4,16 +4,32 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pageobject.*;
-
-import java.time.Duration;
 
 import static org.junit.Assert.assertTrue;
 
 public class LoginTest extends BaseTest {
+
+    @Step("Регистрация нового пользователя с email: {email}")
+    private void registerUser(String email, String password, String name) {
+        MainPage mainPage = new MainPage(driver);
+        mainPage.waitForMainPageLoad();
+        mainPage.clickLoginButton();
+
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.waitForPageLoad();
+        loginPage.clickRegisterLink();
+
+        RegisterPage registerPage = new RegisterPage(driver);
+        registerPage.waitForPageLoad();
+        registerPage.enterName(name);
+        registerPage.enterEmail(email);
+        registerPage.enterPassword(password);
+        registerPage.clickRegisterButton();
+        loginPage.waitForPageLoad();
+        driver.get("https://stellarburgers.education-services.ru/");
+        mainPage.waitForMainPageLoad();
+    }
 
     @Step("Выполнение входа через UI с email: {email}")
     private void performUILogin(String email, String password) {
@@ -26,10 +42,8 @@ public class LoginTest extends BaseTest {
 
     @Step("Проверка успешного входа (появление кнопки 'Оформить заказ')")
     private void verifySuccessfulLogin() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[text()='Оформить заказ']")));
         MainPage mainPage = new MainPage(driver);
-        assertTrue("Кнопка оформления заказа не появилась", mainPage.isOrderButtonDisplayed());
+        mainPage.waitForOrderButton();  // теперь ожидание вынесено в Page Object
     }
 
     @Test
@@ -38,7 +52,7 @@ public class LoginTest extends BaseTest {
     public void loginViaMainButtonTest() {
         String email = "user" + System.currentTimeMillis() + "@test.com";
         String password = "123456";
-        createUserViaApi(email, password, "TestUser");
+        registerUser(email, password, "TestUser");
 
         MainPage mainPage = new MainPage(driver);
         mainPage.waitForMainPageLoad();
@@ -54,7 +68,7 @@ public class LoginTest extends BaseTest {
     public void loginViaPersonalAccountTest() {
         String email = "user" + System.currentTimeMillis() + "@test.com";
         String password = "123456";
-        createUserViaApi(email, password, "TestUser");
+        registerUser(email, password, "TestUser");
 
         MainPage mainPage = new MainPage(driver);
         mainPage.waitForMainPageLoad();
@@ -70,7 +84,7 @@ public class LoginTest extends BaseTest {
     public void loginViaRegisterFormTest() {
         String email = "user" + System.currentTimeMillis() + "@test.com";
         String password = "123456";
-        createUserViaApi(email, password, "TestUser");
+        registerUser(email, password, "TestUser");
 
         MainPage mainPage = new MainPage(driver);
         mainPage.waitForMainPageLoad();
@@ -94,7 +108,7 @@ public class LoginTest extends BaseTest {
     public void loginViaForgotPasswordFormTest() {
         String email = "user" + System.currentTimeMillis() + "@test.com";
         String password = "123456";
-        createUserViaApi(email, password, "TestUser");
+        registerUser(email, password, "TestUser");
 
         MainPage mainPage = new MainPage(driver);
         mainPage.waitForMainPageLoad();
